@@ -1,0 +1,38 @@
+server:
+  port: 8090
+
+eureka:
+  client:
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} ${LOG_LEVEL_PATTERN:-%5p} %m%n"
+
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: productService
+          uri: lb://productService
+          predicates:
+            - Path=/productService/**
+          filters:
+            - RewritePath=/productService/(?<path>.*), /$\{path}
+        - id: shoppingService
+          uri: lb://shoppingService
+          predicates:
+            - Path=/shoppingService/**
+          filters:
+            - RewritePath=/shoppingService/(?<path>.*), /$\{path}
+        - id: deliveryService
+          uri: lb://deliveryService
+          predicates:
+            - Path=/deliveryService/**
+          filters:
+            - RewritePath=/deliveryService/(?<path>.*), /$\{path}
